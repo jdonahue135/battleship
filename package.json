@@ -10,6 +10,11 @@
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -32,6 +37,8 @@
     ]
   },
   "devDependencies": {
-    "prettier": "2.0.5"
+    "husky": "^4.2.5",
+    "prettier": "2.0.5",
+    "pretty-quick": "^2.0.1"
   }
 }
