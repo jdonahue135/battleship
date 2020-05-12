@@ -1,5 +1,6 @@
 const Ship = (name) => {
   let length;
+  // eslint-disable-next-line default-case
   switch (name) {
     case "Carrier":
       length = 5;
@@ -15,8 +16,6 @@ const Ship = (name) => {
       break;
     case "Patrol Boat":
       length = 2;
-      break;
-    default:
       break;
   }
   const getName = () => name;
