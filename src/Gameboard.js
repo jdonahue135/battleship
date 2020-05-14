@@ -33,7 +33,6 @@ const Gameboard = () => {
     }
   }
 
-  // Dummy placements for ships during development
   //maybe simplify by combining orientation and indexes into an array of indexes?
   const placeShip = (shipName, orientation, firstIndex) => {
     const ship = ships.find((ship) => ship.getName() === shipName);
@@ -55,8 +54,12 @@ const Gameboard = () => {
   };
 
   // Tracks attacks
-  const receiveAttack = (coordinates) => {
-    let gridSpace = grid.find((space) => space.coordinates === coordinates);
+  const receiveAttack = (index) => {
+    let gridSpace = grid.find((space) => space.index === Number(index));
+    if (gridSpace.hitStatus === true) {
+      console.log("already hit");
+      return false;
+    }
     gridSpace.hitStatus = true;
 
     if (gridSpace.shipIndex !== null) {
@@ -83,7 +86,13 @@ const Gameboard = () => {
     return true;
   };
 
-  return { receiveAttack, placeShip, getShips, areAllSunk };
+  //this function is for testing only I think
+  const getGridItem = (index) => {
+    const gridItem = grid.find((item) => item.index === index);
+    return gridItem;
+  };
+
+  return { receiveAttack, placeShip, getShips, areAllSunk, getGridItem };
 };
 
 module.exports = Gameboard;

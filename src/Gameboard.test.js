@@ -3,13 +3,21 @@ const Gameboard = require("./Gameboard");
 test("gameboard tracks location of hits on grid", () => {
   const gameboard = Gameboard();
 
-  expect(gameboard.receiveAttack("B4")).toEqual({
-    coordinates: "B4",
+  expect(gameboard.receiveAttack(0)).toEqual({
+    coordinates: "A1",
     hitStatus: true,
-    index: 13,
+    index: 0,
     shipIndex: null,
     shipName: null,
   });
+});
+
+test("gameboard does not allow the same coordinates to be hit more than once", () => {
+  const gameboard = Gameboard();
+
+  gameboard.receiveAttack(0);
+
+  expect(gameboard.receiveAttack(0)).toEqual(false);
 });
 
 test("gameboard tracks location of horizontal boat on grid", () => {
@@ -17,14 +25,14 @@ test("gameboard tracks location of horizontal boat on grid", () => {
 
   gameboard.placeShip("Carrier", "horizontal", 13);
 
-  expect(gameboard.receiveAttack("B4")).toEqual({
+  expect(gameboard.receiveAttack(13)).toEqual({
     coordinates: "B4",
     hitStatus: true,
     index: 13,
     shipIndex: 0,
     shipName: "Carrier",
   });
-  expect(gameboard.receiveAttack("B5")).toEqual({
+  expect(gameboard.receiveAttack(14)).toEqual({
     coordinates: "B5",
     hitStatus: true,
     index: 14,
@@ -38,14 +46,14 @@ test("gameboard tracks location of vertical boat on grid", () => {
 
   gameboard.placeShip("Carrier", "vertical", 13);
 
-  expect(gameboard.receiveAttack("B4")).toEqual({
+  expect(gameboard.receiveAttack(13)).toEqual({
     coordinates: "B4",
     hitStatus: true,
     index: 13,
     shipIndex: 0,
     shipName: "Carrier",
   });
-  expect(gameboard.receiveAttack("C4")).toEqual({
+  expect(gameboard.receiveAttack(23)).toEqual({
     coordinates: "C4",
     hitStatus: true,
     index: 23,
@@ -59,9 +67,9 @@ test("gameboard tracks when ship is sunk", () => {
 
   gameboard.placeShip("Patrol Boat", "vertical", 13);
 
-  gameboard.receiveAttack("C4");
+  gameboard.receiveAttack(23);
 
-  expect(gameboard.receiveAttack("B4")).toEqual({
+  expect(gameboard.receiveAttack(13)).toEqual({
     coordinates: "B4",
     hitStatus: true,
     index: 13,
@@ -79,23 +87,23 @@ test("gameboard reports when all ships are sunk", () => {
   gameboard.placeShip("Battleship", "horizontal", 30);
   gameboard.placeShip("Carrier", "horizontal", 40);
 
-  gameboard.receiveAttack("A1");
-  gameboard.receiveAttack("A2");
-  gameboard.receiveAttack("B1");
-  gameboard.receiveAttack("B2");
-  gameboard.receiveAttack("B3");
-  gameboard.receiveAttack("C1");
-  gameboard.receiveAttack("C2");
-  gameboard.receiveAttack("C3");
-  gameboard.receiveAttack("D1");
-  gameboard.receiveAttack("D2");
-  gameboard.receiveAttack("D3");
-  gameboard.receiveAttack("D4");
-  gameboard.receiveAttack("E1");
-  gameboard.receiveAttack("E2");
-  gameboard.receiveAttack("E3");
-  gameboard.receiveAttack("E4");
-  gameboard.receiveAttack("E5");
+  gameboard.receiveAttack(0);
+  gameboard.receiveAttack(1);
+  gameboard.receiveAttack(10);
+  gameboard.receiveAttack(11);
+  gameboard.receiveAttack(12);
+  gameboard.receiveAttack(20);
+  gameboard.receiveAttack(21);
+  gameboard.receiveAttack(22);
+  gameboard.receiveAttack(30);
+  gameboard.receiveAttack(31);
+  gameboard.receiveAttack(32);
+  gameboard.receiveAttack(33);
+  gameboard.receiveAttack(40);
+  gameboard.receiveAttack(41);
+  gameboard.receiveAttack(42);
+  gameboard.receiveAttack(43);
+  gameboard.receiveAttack(44);
 
   expect(gameboard.areAllSunk()).toEqual(true);
 });
