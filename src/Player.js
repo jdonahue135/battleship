@@ -1,9 +1,17 @@
 const Player = (enemyGameboard) => {
-  const attack = (coordinates) => {
-    enemyGameboard.receiveAttack(coordinates);
+  const attack = (coordinateIndex) => {
+    enemyGameboard.receiveAttack(coordinateIndex);
+
+    return enemyGameboard.getGridItem(coordinateIndex);
   };
 
-  return { attack };
+  const computerAttack = () => {
+    //get number from 0-99
+    let coordinateIndex = Math.floor(Math.random() * 100);
+    enemyGameboard.receiveAttack(coordinateIndex);
+  };
+
+  return { attack, computerAttack };
 };
 
 module.exports = Player;
