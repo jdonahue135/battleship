@@ -1,4 +1,5 @@
 const Ship = (name) => {
+  let ship = [];
   let length;
   // eslint-disable-next-line default-case
   switch (name) {
@@ -19,9 +20,8 @@ const Ship = (name) => {
       break;
   }
   const getName = () => name;
-  const getLength = () => length;
-  let ship = [];
   const getShip = () => ship;
+  const getLength = () => length;
   for (let i = 0; i < length; i++) {
     let shipSpace = {
       index: i,

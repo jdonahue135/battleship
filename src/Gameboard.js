@@ -57,24 +57,26 @@ const Gameboard = () => {
   const receiveAttack = (index) => {
     let gridSpace = grid.find((space) => space.index === Number(index));
     if (gridSpace.hitStatus === true) {
-      console.log("already hit");
       return false;
-    }
-    gridSpace.hitStatus = true;
+    } else {
+      gridSpace.hitStatus = true;
 
-    if (gridSpace.shipIndex !== null) {
-      // ship was hit()!
-      let theShip = ships.find((ship) => gridSpace.shipName === ship.getName());
-      theShip.hit(gridSpace.shipIndex);
+      if (gridSpace.shipIndex !== null) {
+        // ship was hit()!
+        let theShip = ships.find(
+          (ship) => gridSpace.shipName === ship.getName()
+        );
+        theShip.hit(gridSpace.shipIndex);
 
-      //is ship sunk?
-      if (theShip.isSunk() === true) {
-        console.log("You sunk my " + theShip.getName());
+        //is ship sunk?
+        if (theShip.isSunk() === true) {
+          console.log("You sunk my " + theShip.getName());
+        }
       }
-    }
 
-    //This won't need to return a value post-testing
-    return gridSpace;
+      //This won't be neccesary post-testing
+      return gridSpace;
+    }
   };
 
   const areAllSunk = () => {
@@ -92,7 +94,16 @@ const Gameboard = () => {
     return gridItem;
   };
 
-  return { receiveAttack, placeShip, getShips, areAllSunk, getGridItem };
+  const getGrid = () => grid;
+
+  return {
+    receiveAttack,
+    placeShip,
+    getShips,
+    areAllSunk,
+    getGridItem,
+    getGrid,
+  };
 };
 
 module.exports = Gameboard;
