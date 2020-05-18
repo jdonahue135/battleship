@@ -57,6 +57,7 @@ const Gameboard = () => {
   const receiveAttack = (index) => {
     let gridSpace = grid.find((space) => space.index === Number(index));
     if (gridSpace.hitStatus === true) {
+      console.log("space has already been hit");
       return false;
     } else {
       gridSpace.hitStatus = true;
@@ -75,6 +76,8 @@ const Gameboard = () => {
       }
 
       //This won't be neccesary post-testing
+      console.log(gridSpace);
+
       return gridSpace;
     }
   };
