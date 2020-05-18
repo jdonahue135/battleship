@@ -1,5 +1,4 @@
 const populateGameboard = (gameboard) => {
-  console.log("gameboard being populated...");
   gameboard.placeShip("Patrol Boat", "horizontal", 0);
   gameboard.placeShip("Submarine", "horizontal", 10);
   gameboard.placeShip("Destroyer", "horizontal", 20);
@@ -27,4 +26,8 @@ const sinkAllShips = (gameboard) => {
   gameboard.receiveAttack(44);
 };
 
-export { populateGameboard, sinkAllShips };
+const getComputerPlay = () => {
+  return Math.floor(Math.random() * 100);
+};
+
+export { populateGameboard, sinkAllShips, getComputerPlay };
