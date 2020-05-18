@@ -1,5 +1,5 @@
 import React from "react";
-import { populateGameboard } from "../helpers";
+import { populateGameboard, getComputerPlay } from "../helpers";
 import Board from "./Board";
 
 const Gameboard = require("../Gameboard");
@@ -18,8 +18,6 @@ class Game extends React.Component {
     this.players = [Player("player1"), Player("player2")];
   }
 
-  /*let gameboards;
-  let players;*/
   setUpGame() {
     const gameboard1 = Gameboard();
     populateGameboard(gameboard1);
@@ -35,19 +33,28 @@ class Game extends React.Component {
 
   componentDidUpdate() {
     if (this.state.activePlayer !== this.players[0]) {
-      this.playTurn(this.state.gameboard1);
+      this.playTurn(getComputerPlay());
     }
   }
-  playTurn(gameboard, coordinateIndex) {
+  playTurn(coordinateIndex) {
+    let gameboard;
+    this.state.activePlayer !== this.players[0]
+      ? (gameboard = this.state.gameboard2)
+      : (gameboard = this.state.gameboard1);
+
     const attackedGridItem = this.state.activePlayer.attack(
       gameboard,
       coordinateIndex
     );
-    if (attackedGridItem === false) {
+
+    //check if this is a duplicate hit
+    if (attackedGridItem === false || attackedGridItem === undefined) {
       if (this.state.activePlayer === this.players[0]) {
         return;
       } else {
-        this.playTurn(this.state.gameboard1);
+        this.playTurn(getComputerPlay());
+        //need to call return here so a second attackGridItem with index of 0 is not added to the callstack
+        return;
       }
     }
     //add appropriate class to gridItem
@@ -66,7 +73,6 @@ class Game extends React.Component {
         this.setState({ activePlayer: this.players[0] });
       }
     }
-    console.log(attackedGridItem);
   }
   checkForWinner() {
     const result =
@@ -81,8 +87,7 @@ class Game extends React.Component {
   }
   handleClick(e) {
     if (this.state.gameStatus && this.state.activePlayer === this.players[0]) {
-      //playTurn with active player, gameboard and target
-      this.playTurn(this.state.gameboard2, e.target.id);
+      this.playTurn(e.target.id);
     }
   }
   addClass(target, className) {
@@ -92,6 +97,9 @@ class Game extends React.Component {
         : "#player-container";
     const parent = document.querySelector(parentID);
     parent.childNodes.item(target).classList.add(className);
+    this.state.activePlayer === this.players[0]
+      ? this.playerCounter++
+      : this.computerCounter++;
   }
   render() {
     return (
