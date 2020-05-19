@@ -30,4 +30,9 @@ const getComputerPlay = () => {
   return Math.floor(Math.random() * 100);
 };
 
-export { populateGameboard, sinkAllShips, getComputerPlay };
+const formatShipName = (name) => {
+  //formats shipName to be added to a css class
+  return name.replace(" ", "-").toLowerCase();
+};
+
+export { populateGameboard, sinkAllShips, getComputerPlay, formatShipName };
