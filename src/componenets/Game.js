@@ -1,13 +1,13 @@
 import React from "react";
 import { populateGameboard, getComputerPlay } from "../helpers";
 import Board from "./Board";
-import Ships from "./Ships";
+import Ship from "./Ship";
 
 import { DndProvider } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
 
-const Gameboard = require("../Gameboard");
-const Player = require("../Player");
+const Gameboard = require("../factories/Gameboard");
+const Player = require("../factories/Player");
 
 class Game extends React.Component {
   constructor(props) {
@@ -107,9 +107,11 @@ class Game extends React.Component {
   }
 
   render() {
+    //reset doesn't do anything yet
+    let message = this.state.gameStatus ? "Reset" : "Play Game";
     return (
       <div className="game-container">
-        <button onClick={this.setUpGame.bind(this)}>Play Game</button>
+        <button onClick={this.setUpGame.bind(this)}>{message}</button>
         <div className="board-container">
           <Board
             board={this.state.computerGameboard.getGrid()}
@@ -121,7 +123,13 @@ class Game extends React.Component {
             onClick={this.handleClick.bind(this)}
           />
         </div>
-        <Ships ships={this.state.playerGameboard.getShips()} />
+        <div className="ships-container">
+          <Ship ship={this.state.playerGameboard.getShips()[0]} />
+          <Ship ship={this.state.playerGameboard.getShips()[1]} />
+          <Ship ship={this.state.playerGameboard.getShips()[2]} />
+          <Ship ship={this.state.playerGameboard.getShips()[3]} />
+          <Ship ship={this.state.playerGameboard.getShips()[4]} />
+        </div>
       </div>
     );
   }
