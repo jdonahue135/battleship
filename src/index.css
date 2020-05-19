@@ -5,6 +5,7 @@
 .board-container {
   justify-content: center;
   text-align: -webkit-center;
+  display: flex;
 }
 .gameboard-container {
   display: grid;
@@ -26,4 +27,37 @@
 }
 .miss {
   background-color: lightgray;
+}
+.ships-container {
+  width: 25vh;
+  height: 25vh;
+}
+.ship-space {
+  border: 1px solid rgb(170, 163, 163);
+}
+.ship {
+  display: grid;
+  background-color: black;
+  height: 5vh;
+  margin: 5px;
+}
+.carrier {
+  width: 25vh;
+  grid-template-columns: repeat(5, 20%);
+}
+.battleship {
+  width: 20vh;
+  grid-template-columns: repeat(4, 25%);
+}
+.destroyer {
+  width: 15vh;
+  grid-template-columns: repeat(3, 33.333%);
+}
+.submarine {
+  width: 15vh;
+  grid-template-columns: repeat(3, 33.333%);
+}
+.patrol-boat {
+  width: 10vh;
+  grid-template-columns: repeat(2, 50%);
 }
