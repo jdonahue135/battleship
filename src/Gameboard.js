@@ -75,9 +75,6 @@ const Gameboard = () => {
         }
       }
 
-      //This won't be neccesary post-testing
-      console.log(gridSpace);
-
       return gridSpace;
     }
   };
