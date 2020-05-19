@@ -1,6 +1,10 @@
 import React from "react";
 import { populateGameboard, getComputerPlay } from "../helpers";
 import Board from "./Board";
+import Ships from "./Ships";
+
+import { DndProvider } from "react-dnd";
+import HTML5Backend from "react-dnd-html5-backend";
 
 const Gameboard = require("../Gameboard");
 const Player = require("../Player");
@@ -10,8 +14,8 @@ class Game extends React.Component {
     super(props);
 
     this.state = {
-      gameboard1: Gameboard(),
-      gameboard2: Gameboard(),
+      playerGameboard: Gameboard(),
+      computerGameboard: Gameboard(),
       activePlayer: null,
       gameStatus: false,
     };
@@ -19,13 +23,13 @@ class Game extends React.Component {
   }
 
   setUpGame() {
-    const gameboard1 = Gameboard();
-    populateGameboard(gameboard1);
-    const gameboard2 = Gameboard();
-    populateGameboard(gameboard2);
+    const playerGameboard = Gameboard();
+    populateGameboard(playerGameboard);
+    const computerGameboard = Gameboard();
+    populateGameboard(computerGameboard);
     this.setState({
-      gameboard1,
-      gameboard2,
+      playerGameboard,
+      computerGameboard,
       gameStatus: true,
       activePlayer: this.players[0],
     });
@@ -39,8 +43,8 @@ class Game extends React.Component {
   playTurn(coordinateIndex) {
     let gameboard;
     this.state.activePlayer !== this.players[0]
-      ? (gameboard = this.state.gameboard2)
-      : (gameboard = this.state.gameboard1);
+      ? (gameboard = this.state.computerGameboard)
+      : (gameboard = this.state.playerGameboard);
 
     const attackedGridItem = this.state.activePlayer.attack(
       gameboard,
@@ -77,8 +81,8 @@ class Game extends React.Component {
   checkForWinner() {
     const result =
       this.state.activePlayer === this.players[0]
-        ? this.state.gameboard2.areAllSunk()
-        : this.state.gameboard1.areAllSunk();
+        ? this.state.computerGameboard.areAllSunk()
+        : this.state.playerGameboard.areAllSunk();
     if (result) {
       console.log("someone won!");
       this.setState({ gameStatus: false });
@@ -101,23 +105,23 @@ class Game extends React.Component {
       ? this.playerCounter++
       : this.computerCounter++;
   }
+
   render() {
     return (
       <div className="game-container">
         <button onClick={this.setUpGame.bind(this)}>Play Game</button>
         <div className="board-container">
-          <p className="player-label">Enemy Board</p>
           <Board
-            player={true}
-            board={this.state.gameboard1.getGrid()}
+            board={this.state.computerGameboard.getGrid()}
             onClick={this.handleClick.bind(this)}
           />
-          <p className="player-label">Your Board</p>
           <Board
-            board={this.state.gameboard2.getGrid()}
+            player={true}
+            board={this.state.playerGameboard.getGrid()}
             onClick={this.handleClick.bind(this)}
           />
         </div>
+        <Ships ships={this.state.playerGameboard.getShips()} />
       </div>
     );
   }
