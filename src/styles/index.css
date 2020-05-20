@@ -29,8 +29,11 @@
   background-color: lightgray;
 }
 .ships-container {
-  width: 25vh;
-  height: 25vh;
+  display: grid;
+}
+.ship-container {
+  display: -webkit-inline-box;
+  -webkit-box-align: center;
 }
 .ship-space {
   border: 1px solid rgb(170, 163, 163);
@@ -60,4 +63,7 @@
 .patrol-boat {
   width: 10vh;
   grid-template-columns: repeat(2, 50%);
+}
+form label {
+  padding: 5px;
 }
