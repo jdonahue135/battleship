@@ -18,14 +18,16 @@ class Game extends React.Component {
       computerGameboard: Gameboard(),
       activePlayer: null,
       gameStatus: false,
+      shipCoordinates: null,
+      shipOrientation: "horizontal",
     };
     this.players = [Player("player1"), Player("player2")];
   }
 
   setUpGame() {
-    const playerGameboard = Gameboard();
+    const playerGameboard = this.state.playerGameboard;
     populateGameboard(playerGameboard);
-    const computerGameboard = Gameboard();
+    const computerGameboard = this.state.computerGameboard;
     populateGameboard(computerGameboard);
     this.setState({
       playerGameboard,
@@ -36,15 +38,16 @@ class Game extends React.Component {
   }
 
   componentDidUpdate() {
-    if (this.state.activePlayer !== this.players[0]) {
+    if (this.state.activePlayer === this.players[1]) {
       this.playTurn(getComputerPlay());
     }
   }
+
   playTurn(coordinateIndex) {
     let gameboard;
     this.state.activePlayer !== this.players[0]
-      ? (gameboard = this.state.computerGameboard)
-      : (gameboard = this.state.playerGameboard);
+      ? (gameboard = this.state.playerGameboard)
+      : (gameboard = this.state.computerGameboard);
 
     const attackedGridItem = this.state.activePlayer.attack(
       gameboard,
@@ -89,7 +92,7 @@ class Game extends React.Component {
       return true;
     }
   }
-  handleClick(e) {
+  handleAttack(e) {
     if (this.state.gameStatus && this.state.activePlayer === this.players[0]) {
       this.playTurn(e.target.id);
     }
@@ -101,9 +104,38 @@ class Game extends React.Component {
         : "#player-container";
     const parent = document.querySelector(parentID);
     parent.childNodes.item(target).classList.add(className);
-    this.state.activePlayer === this.players[0]
-      ? this.playerCounter++
-      : this.computerCounter++;
+  }
+  handleFlip() {
+    console.log("Flip, flip, flipadelphia");
+    let shipOrientation =
+      this.state.shipOrientation === "horizontal" ? "vertical" : "horizontal";
+    this.setState({ shipOrientation });
+  }
+  handleSubmit(e) {
+    e.preventDefault();
+
+    const gameboard = this.state.playerGameboard;
+    gameboard.placeShip(
+      "Carrier",
+      this.state.shipOrientation,
+      this.state.shipCoordinates
+    );
+    this.setState({
+      shipCoordinates: null,
+      shipOrientation: null,
+    });
+    console.log(e.target);
+  }
+  handleChange(e) {
+    if (e.target.id === "orientation") {
+      let orientation = e.target.value;
+      console.log(orientation);
+      this.setState({ shipOrientation: orientation });
+    } else {
+      let coordinates = e.target.value;
+      console.log(coordinates);
+      this.setState({ shipCoordinates: coordinates });
+    }
   }
 
   render() {
@@ -113,23 +145,37 @@ class Game extends React.Component {
       <div className="game-container">
         <button onClick={this.setUpGame.bind(this)}>{message}</button>
         <div className="board-container">
+          <Board board={this.state.playerGameboard.getGrid()} />
           <Board
+            playerAttack={true}
             board={this.state.computerGameboard.getGrid()}
-            onClick={this.handleClick.bind(this)}
-          />
-          <Board
-            player={true}
-            board={this.state.playerGameboard.getGrid()}
-            onClick={this.handleClick.bind(this)}
+            onClick={this.handleAttack.bind(this)}
           />
         </div>
         <div className="ships-container">
-          <Ship ship={this.state.playerGameboard.getShips()[0]} />
-          <Ship ship={this.state.playerGameboard.getShips()[1]} />
-          <Ship ship={this.state.playerGameboard.getShips()[2]} />
-          <Ship ship={this.state.playerGameboard.getShips()[3]} />
-          <Ship ship={this.state.playerGameboard.getShips()[4]} />
+          <Ship
+            onChange={this.handleChange.bind(this)}
+            onSubmit={this.handleSubmit.bind(this)}
+            ship={this.state.playerGameboard.getShips()[0]}
+          />
+          <Ship
+            onSubmit={this.handleSubmit.bind(this)}
+            ship={this.state.playerGameboard.getShips()[1]}
+          />
+          <Ship
+            onSubmit={this.handleSubmit.bind(this)}
+            ship={this.state.playerGameboard.getShips()[2]}
+          />
+          <Ship
+            onSubmit={this.handleSubmit.bind(this)}
+            ship={this.state.playerGameboard.getShips()[3]}
+          />
+          <Ship
+            onSubmit={this.handleSubmit.bind(this)}
+            ship={this.state.playerGameboard.getShips()[4]}
+          />
         </div>
+        <button onClick={this.handleFlip.bind(this)}>Flip</button>
       </div>
     );
   }
