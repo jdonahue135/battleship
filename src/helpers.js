@@ -26,6 +26,13 @@ const sinkAllShips = (gameboard) => {
   gameboard.receiveAttack(44);
 };
 
+const coordinatesToIndex = (coordinates) => {
+  const letter = coordinates.charAt(0).toUpperCase();
+  const letterValue = letter.charCodeAt(0) - 65;
+  const number = coordinates.slice(1);
+  return letterValue + number;
+};
+
 const getComputerPlay = () => {
   return Math.floor(Math.random() * 100);
 };
@@ -35,4 +42,10 @@ const formatShipName = (name) => {
   return name.replace(" ", "-").toLowerCase();
 };
 
-export { populateGameboard, sinkAllShips, getComputerPlay, formatShipName };
+export {
+  populateGameboard,
+  sinkAllShips,
+  getComputerPlay,
+  formatShipName,
+  coordinatesToIndex,
+};
