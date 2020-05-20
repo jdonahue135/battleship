@@ -12,11 +12,18 @@ const Ship = (props) => {
     <div key={props.ship.getName() + space} className="ship-space" />
   ));
   return (
-    <div
-      key={props.ship.getName()}
-      className={formatShipName(props.ship.getName()) + " ship"}
-    >
-      {theShip}
+    <div className="ship-container">
+      <div
+        key={props.ship.getName()}
+        className={formatShipName(props.ship.getName()) + " ship"}
+      >
+        {theShip}
+      </div>
+      <form onSubmit={props.onSubmit}>
+        <label htmlFor="coordinates">Coordinates: </label>
+        <input onChange={props.onChange} type="text"></input>
+        <button type="submit">Place Ship</button>
+      </form>
     </div>
   );
 };
