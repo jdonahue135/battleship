@@ -5,7 +5,7 @@ const Board = (props) => {
   const grid = props.board.map((gridSpace) => {
     let clickSetting = null;
     let className = "gridspace";
-    if (props.player) {
+    if (props.playerAttack) {
       clickSetting = props.onClick;
       containerId = "computer-container";
     } else {
