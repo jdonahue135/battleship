@@ -44,7 +44,7 @@ const Gameboard = () => {
     for (let i = 0; i < ship.getLength(); i++) {
       // find gridItem
       let gridItem = grid.find(
-        (theItem) => theItem.index === firstIndex + i * increment
+        (theItem) => theItem.index === Number(firstIndex) + i * increment
       );
 
       // assign ship to gridName
