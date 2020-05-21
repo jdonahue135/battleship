@@ -28,9 +28,15 @@ const sinkAllShips = (gameboard) => {
 
 const coordinatesToIndex = (coordinates) => {
   const letter = coordinates.charAt(0).toUpperCase();
-  const letterValue = letter.charCodeAt(0) - 65;
-  const number = coordinates.slice(1);
+  const letterValue = (letter.charCodeAt(0) - 65) * 10;
+  const number = Number(coordinates.slice(1));
   return letterValue + number - 1;
+};
+
+const indexToCoordinates = (index) => {
+  const letter = String.fromCharCode(Math.floor(index / 10) + 65);
+  const number = (index % 10) + 1;
+  return letter + number;
 };
 
 const getComputerPlay = () => {
@@ -48,4 +54,5 @@ export {
   getComputerPlay,
   formatShipName,
   coordinatesToIndex,
+  indexToCoordinates,
 };
