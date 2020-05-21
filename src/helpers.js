@@ -30,7 +30,7 @@ const coordinatesToIndex = (coordinates) => {
   const letter = coordinates.charAt(0).toUpperCase();
   const letterValue = letter.charCodeAt(0) - 65;
   const number = coordinates.slice(1);
-  return letterValue + number;
+  return letterValue + number - 1;
 };
 
 const getComputerPlay = () => {
