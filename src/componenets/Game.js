@@ -3,6 +3,7 @@ import {
   populateGameboard,
   getComputerPlay,
   coordinatesToIndex,
+  indexToCoordinates,
 } from "../helpers";
 import Board from "./Board";
 import Ship from "./Ship";
@@ -32,7 +33,6 @@ class Game extends React.Component {
 
   setUpGame() {
     const playerGameboard = this.state.playerGameboard;
-    populateGameboard(playerGameboard);
     const computerGameboard = this.state.computerGameboard;
     populateGameboard(computerGameboard);
     this.setState({
@@ -44,8 +44,10 @@ class Game extends React.Component {
   }
 
   componentDidUpdate() {
-    if (this.state.activePlayer === this.players[1]) {
-      this.playTurn(getComputerPlay());
+    if (this.state.gameStatus) {
+      if (this.state.activePlayer === this.players[1]) {
+        this.playTurn(getComputerPlay());
+      }
     }
   }
 
@@ -65,7 +67,9 @@ class Game extends React.Component {
       if (this.state.activePlayer === this.players[0]) {
         return;
       } else {
-        this.playTurn(getComputerPlay());
+        let index = coordinateIndex;
+        index < 99 ? index++ : (index = 0);
+        this.playTurn(index);
         //need to call return here so a second attackGridItem with index of 0 is not added to the callstack
         return;
       }
@@ -119,37 +123,74 @@ class Game extends React.Component {
   }
 
   handleDrop(coordinates) {
+    //ignores if event was passed
     if (typeof coordinates === "string") {
-      //ignores if event was passed
+      //get Ship
       const shipName = this.state.shipIndex.slice(0, -1);
+      const ship = this.state.playerGameboard
+        .getShips()
+        .find((ship) => ship.getName() === shipName);
+
+      //get shipIndex
       const index = this.state.shipIndex[this.state.shipIndex.length - 1];
-      let firstIndex = coordinatesToIndex(coordinates) - index;
+
+      //get first Space index
+      let firstSpaceIndex =
+        this.state.shipOrientation === "horizontal"
+          ? coordinatesToIndex(coordinates) - index
+          : coordinatesToIndex(coordinates) - index * 10;
+
+      //get shipLength
+      const shipLength = ship.getLength();
+
+      //get all coordinates in an array
+      let shipCoordinates = [];
+      let coordinateIndex = firstSpaceIndex;
+      let result;
+      for (let i = 0; i < shipLength; i++) {
+        shipCoordinates.push(indexToCoordinates(coordinateIndex));
+        this.state.shipOrientation === "horizontal"
+          ? coordinateIndex++
+          : (coordinateIndex = coordinateIndex + 10);
+      }
+      //check if coordinates exist and/or have a ship
+      for (let i = 0; i < shipCoordinates.length; i++) {
+        let space = this.state.playerGameboard.getGridItem(
+          coordinatesToIndex(shipCoordinates[i])
+        );
+        if (!space || space.shipName) {
+          result = true;
+          return;
+        }
+      }
+
+      //can't place ships where there is not enough room on the board (no wrapping of ships)
+      if (this.state.shipOrientation === "horizontal") {
+        result = shipCoordinates.find(
+          (theCoordinate) => theCoordinate[0] !== coordinates[0]
+        );
+      } else {
+        let firstCoordinates = indexToCoordinates(firstSpaceIndex);
+        let row = firstCoordinates[0];
+        let distanceToWall = 10 - (row.charCodeAt(0) - 65);
+        let wiggleRoom = distanceToWall - shipLength;
+        result = wiggleRoom > 0 ? false : true;
+      }
+      if (result) {
+        console.log("can't place ship here");
+        return;
+      }
       const playerGameboard = this.state.playerGameboard;
       playerGameboard.placeShip(
         shipName,
         this.state.shipOrientation,
-        firstIndex
+        firstSpaceIndex
       );
       this.setState({ playerGameboard });
     }
   }
   handleDrag(e) {
     this.setState({ shipIndex: e.target.id });
-  }
-  handleHover(coordinates) {
-    const shipName = this.state.shipIndex.slice(0, -1);
-    const shipLength = this.state.playerGameboard
-      .getShips()
-      .find((ship) => ship.getName() === shipName)
-      .getLength();
-    const index = this.state.shipIndex[this.state.shipIndex.length - 1];
-    let coordinateIndex = coordinatesToIndex(coordinates) - index;
-    let hoverSpaces = [];
-    for (let i = 0; i < shipLength; i++) {
-      hoverSpaces.push(coordinateIndex);
-      coordinateIndex++;
-    }
-    //this.setState({hoverSpaces})
   }
   renderShip(ship) {
     return (
@@ -176,10 +217,8 @@ class Game extends React.Component {
           <div className="board-container">
             <Board
               key="playerGameboard"
-              hoverSpaces={this.state.hoverSpaces}
               board={this.state.playerGameboard.getGrid()}
               onDrop={this.handleDrop.bind(this)}
-              onHover={this.handleHover.bind(this)}
             />
             <Board
               key="computerGameboard"
