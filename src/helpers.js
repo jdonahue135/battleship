@@ -1,9 +1,19 @@
 const populateGameboard = (gameboard) => {
-  gameboard.placeShip("Patrol Boat", "horizontal", 0);
+  const ships = gameboard.getShips();
+  for (let i = 0; i < ships.length; i++) {
+    const name = ships[i].getName();
+    const orientation = Math.random() < 0.5 ? "horizontal" : "vertical";
+    const index = Math.floor(Math.random() * 100);
+    const result = gameboard.placeShip(name, orientation, index);
+    if (result === false) {
+      i--;
+    }
+  }
+  /*gameboard.placeShip("Patrol Boat", "horizontal", 0);
   gameboard.placeShip("Submarine", "horizontal", 10);
   gameboard.placeShip("Destroyer", "horizontal", 20);
   gameboard.placeShip("Battleship", "horizontal", 30);
-  gameboard.placeShip("Carrier", "horizontal", 40);
+  gameboard.placeShip("Carrier", "horizontal", 40);*/
 };
 
 const sinkAllShips = (gameboard) => {
