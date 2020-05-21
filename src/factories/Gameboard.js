@@ -1,3 +1,5 @@
+const { indexToCoordinates, coordinatesToIndex } = require("../helpers");
+
 const Ship = require("./Ship");
 
 const Gameboard = () => {
@@ -33,14 +35,52 @@ const Gameboard = () => {
     }
   }
 
-  //maybe simplify by combining orientation and indexes into an array of indexes?
   const placeShip = (shipName, orientation, firstIndex) => {
+    //Validate ship placement
     const ship = ships.find((ship) => ship.getName() === shipName);
+
+    //get all coordinates where ship should be placed
+    let shipCoordinates = [];
+    let coordinateIndex = firstIndex;
+    for (let i = 0; i < ship.getLength(); i++) {
+      shipCoordinates.push(indexToCoordinates(coordinateIndex));
+      orientation === "horizontal"
+        ? coordinateIndex++
+        : (coordinateIndex = coordinateIndex + 10);
+    }
+
+    //check if coordinates exist and/or already have a ship
+    let err;
+    for (let i = 0; i < shipCoordinates.length; i++) {
+      let space = getGridItem(coordinatesToIndex(shipCoordinates[i]));
+      if (!space || space.shipName) {
+        err = true;
+        return false;
+      }
+    }
+
+    //can't place ships where there is not enough room on the board (no wrapping of ships)
+    if (orientation === "horizontal") {
+      err = shipCoordinates.find(
+        (theCoordinate) =>
+          theCoordinate[0] !== indexToCoordinates(firstIndex)[0]
+      );
+    } else {
+      let firstCoordinates = indexToCoordinates(firstIndex);
+      let row = firstCoordinates[0];
+      let distanceToWall = 10 - (row.charCodeAt(0) - 65);
+      let wiggleRoom = distanceToWall - ship.getLength();
+      err = wiggleRoom > 0 ? false : true;
+    }
+    if (err) {
+      return false;
+    }
+
+    //place ship on grid items
 
     // Increments index correctly for horizontal or vertical orientation
     let increment = orientation === "horizontal" ? 1 : 10;
 
-    //place ship on grid items
     for (let i = 0; i < ship.getLength(); i++) {
       // find gridItem
       let currentIndex = Number(firstIndex) + i * increment;
@@ -52,10 +92,11 @@ const Gameboard = () => {
       // assign ship to gridName
       gridItem.shipName = shipName;
       gridItem.shipIndex = i;
+      ship.place();
     }
   };
 
-  // Tracks attacks
+  // Track attacks
   const receiveAttack = (index) => {
     let gridSpace = grid.find((space) => space.index === Number(index));
     if (gridSpace.hitStatus === true) {

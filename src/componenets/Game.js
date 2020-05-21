@@ -3,7 +3,6 @@ import {
   populateGameboard,
   getComputerPlay,
   coordinatesToIndex,
-  indexToCoordinates,
 } from "../helpers";
 import Board from "./Board";
 import Ship from "./Ship";
@@ -99,7 +98,7 @@ class Game extends React.Component {
         ? this.state.computerGameboard.areAllSunk()
         : this.state.playerGameboard.areAllSunk();
     if (result) {
-      console.log(this.activePlayer.getNAme() + " won!");
+      console.log(this.state.activePlayer.getName() + " won!");
       this.setState({ gameStatus: false });
       return true;
     }
@@ -132,10 +131,6 @@ class Game extends React.Component {
     if (typeof coordinates === "string") {
       //get Ship info
       const shipName = this.state.shipIndex.slice(0, -1);
-      const ship = this.state.playerGameboard
-        .getShips()
-        .find((ship) => ship.getName() === shipName);
-      const shipLength = ship.getLength();
       const shipIndex = this.state.shipIndex[this.state.shipIndex.length - 1];
 
       //get first Space index
@@ -143,44 +138,6 @@ class Game extends React.Component {
         this.state.shipOrientation === "horizontal"
           ? coordinatesToIndex(coordinates) - shipIndex
           : coordinatesToIndex(coordinates) - shipIndex * 10;
-
-      //get all coordinates where ship should be placed
-      let shipCoordinates = [];
-      let coordinateIndex = firstSpaceIndex;
-      let result;
-      for (let i = 0; i < shipLength; i++) {
-        shipCoordinates.push(indexToCoordinates(coordinateIndex));
-        this.state.shipOrientation === "horizontal"
-          ? coordinateIndex++
-          : (coordinateIndex = coordinateIndex + 10);
-      }
-      //check if coordinates exist and/or already have a ship
-      for (let i = 0; i < shipCoordinates.length; i++) {
-        let space = this.state.playerGameboard.getGridItem(
-          coordinatesToIndex(shipCoordinates[i])
-        );
-        if (!space || space.shipName) {
-          result = true;
-          return;
-        }
-      }
-
-      //can't place ships where there is not enough room on the board (no wrapping of ships)
-      if (this.state.shipOrientation === "horizontal") {
-        result = shipCoordinates.find(
-          (theCoordinate) => theCoordinate[0] !== coordinates[0]
-        );
-      } else {
-        let firstCoordinates = indexToCoordinates(firstSpaceIndex);
-        let row = firstCoordinates[0];
-        let distanceToWall = 10 - (row.charCodeAt(0) - 65);
-        let wiggleRoom = distanceToWall - shipLength;
-        result = wiggleRoom > 0 ? false : true;
-      }
-      if (result) {
-        console.log("can't place ship here");
-        return;
-      }
 
       //place ship
       const playerGameboard = this.state.playerGameboard;
@@ -198,18 +155,26 @@ class Game extends React.Component {
   }
 
   renderShip(ship) {
-    return (
-      <Ship
-        onClick={this.handleDrag.bind(this)}
-        ship={ship}
-        orientation={this.state.shipOrientation}
-      />
-    );
+    if (!ship.getPlacedStatus()) {
+      return (
+        <Ship
+          onClick={this.handleDrag.bind(this)}
+          ship={ship}
+          orientation={this.state.shipOrientation}
+        />
+      );
+    }
+  }
+
+  resetGame() {
+    window.location.reload(false);
   }
 
   render() {
-    //reset doesn't do anything yet
     let message = this.state.gameStatus ? "Reset" : "Play Game";
+    let fn = this.state.gameStatus
+      ? this.resetGame.bind(this)
+      : this.setUpGame.bind(this);
     let classList = "ships-container";
     classList =
       this.state.shipOrientation === "horizontal"
@@ -218,7 +183,7 @@ class Game extends React.Component {
     return (
       <DndProvider backend={Backend}>
         <div className="game-container">
-          <button onClick={this.setUpGame.bind(this)}>{message}</button>
+          <button onClick={fn}>{message}</button>
           <div className="board-container">
             <Board
               key="playerGameboard"
