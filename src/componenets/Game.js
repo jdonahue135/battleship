@@ -28,7 +28,15 @@ class Game extends React.Component {
       hoverSpaces: null,
       shipIndex: null,
     };
-    this.players = [Player("player1"), Player("player2")];
+    this.players = [Player("Player"), Player("Computer")];
+  }
+
+  componentDidUpdate() {
+    if (this.state.gameStatus) {
+      if (this.state.activePlayer === this.players[1]) {
+        this.playTurn(getComputerPlay());
+      }
+    }
   }
 
   setUpGame() {
@@ -41,14 +49,6 @@ class Game extends React.Component {
       gameStatus: true,
       activePlayer: this.players[0],
     });
-  }
-
-  componentDidUpdate() {
-    if (this.state.gameStatus) {
-      if (this.state.activePlayer === this.players[1]) {
-        this.playTurn(getComputerPlay());
-      }
-    }
   }
 
   playTurn(coordinateIndex) {
@@ -67,6 +67,7 @@ class Game extends React.Component {
       if (this.state.activePlayer === this.players[0]) {
         return;
       } else {
+        //computer attacks closest available coordinates
         let index = coordinateIndex;
         index < 99 ? index++ : (index = 0);
         this.playTurn(index);
@@ -91,22 +92,25 @@ class Game extends React.Component {
       }
     }
   }
+
   checkForWinner() {
     const result =
       this.state.activePlayer === this.players[0]
         ? this.state.computerGameboard.areAllSunk()
         : this.state.playerGameboard.areAllSunk();
     if (result) {
-      console.log("someone won!");
+      console.log(this.activePlayer.getNAme() + " won!");
       this.setState({ gameStatus: false });
       return true;
     }
   }
+
   handleAttack(e) {
     if (this.state.gameStatus && this.state.activePlayer === this.players[0]) {
       this.playTurn(e.target.id);
     }
   }
+
   addClass(target, className) {
     const parentID =
       this.state.activePlayer === this.players[0]
@@ -115,6 +119,7 @@ class Game extends React.Component {
     const parent = document.querySelector(parentID);
     parent.childNodes.item(target).classList.add(className);
   }
+
   handleFlip() {
     console.log("Flip, flip, flipadelphia");
     let shipOrientation =
@@ -125,25 +130,21 @@ class Game extends React.Component {
   handleDrop(coordinates) {
     //ignores if event was passed
     if (typeof coordinates === "string") {
-      //get Ship
+      //get Ship info
       const shipName = this.state.shipIndex.slice(0, -1);
       const ship = this.state.playerGameboard
         .getShips()
         .find((ship) => ship.getName() === shipName);
-
-      //get shipIndex
-      const index = this.state.shipIndex[this.state.shipIndex.length - 1];
+      const shipLength = ship.getLength();
+      const shipIndex = this.state.shipIndex[this.state.shipIndex.length - 1];
 
       //get first Space index
-      let firstSpaceIndex =
+      const firstSpaceIndex =
         this.state.shipOrientation === "horizontal"
-          ? coordinatesToIndex(coordinates) - index
-          : coordinatesToIndex(coordinates) - index * 10;
+          ? coordinatesToIndex(coordinates) - shipIndex
+          : coordinatesToIndex(coordinates) - shipIndex * 10;
 
-      //get shipLength
-      const shipLength = ship.getLength();
-
-      //get all coordinates in an array
+      //get all coordinates where ship should be placed
       let shipCoordinates = [];
       let coordinateIndex = firstSpaceIndex;
       let result;
@@ -153,7 +154,7 @@ class Game extends React.Component {
           ? coordinateIndex++
           : (coordinateIndex = coordinateIndex + 10);
       }
-      //check if coordinates exist and/or have a ship
+      //check if coordinates exist and/or already have a ship
       for (let i = 0; i < shipCoordinates.length; i++) {
         let space = this.state.playerGameboard.getGridItem(
           coordinatesToIndex(shipCoordinates[i])
@@ -180,6 +181,8 @@ class Game extends React.Component {
         console.log("can't place ship here");
         return;
       }
+
+      //place ship
       const playerGameboard = this.state.playerGameboard;
       playerGameboard.placeShip(
         shipName,
@@ -189,9 +192,11 @@ class Game extends React.Component {
       this.setState({ playerGameboard });
     }
   }
+
   handleDrag(e) {
     this.setState({ shipIndex: e.target.id });
   }
+
   renderShip(ship) {
     return (
       <Ship
