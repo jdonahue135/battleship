@@ -1,25 +1,32 @@
 import React from "react";
+import GridSpace from "./GridSpace";
 
 const Board = (props) => {
-  let containerId;
+  let containerId = props.onClick ? "computer-container" : "player-container";
   const grid = props.board.map((gridSpace) => {
-    let clickSetting = null;
-    let className = "gridspace";
-    if (props.playerAttack) {
-      clickSetting = props.onClick;
-      containerId = "computer-container";
+    const hoverSpaces = props.hoverSpaces;
+    if (hoverSpaces && hoverSpaces.includes(gridSpace.index)) {
+      return (
+        <GridSpace
+          hover={true}
+          onHover={props.onHover}
+          key={gridSpace.coordinates}
+          gridSpace={gridSpace}
+          onClick={props.onClick}
+          onDrop={props.onDrop}
+        />
+      );
     } else {
-      className = gridSpace.shipName ? "gridspace has-ship" : "gridspace";
-      containerId = "player-container";
+      return (
+        <GridSpace
+          onHover={props.onHover}
+          key={gridSpace.coordinates}
+          gridSpace={gridSpace}
+          onClick={props.onClick}
+          onDrop={props.onDrop}
+        />
+      );
     }
-    return (
-      <div
-        key={gridSpace.coordinates}
-        className={className}
-        onClick={clickSetting}
-        id={gridSpace.index}
-      />
-    );
   });
   return (
     <div id={containerId} className="gameboard-container">
