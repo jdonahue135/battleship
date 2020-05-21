@@ -10,7 +10,7 @@ const GridSpace = (props) => {
   if (!clickSetting) {
     className = props.gridSpace.shipName ? "gridspace has-ship" : "gridspace";
   }
-  const [{ isOver }, drop] = useDrop({
+  const [, drop] = useDrop({
     accept: ItemTypes.SHIP,
     drop: () => props.onDrop(props.gridSpace.coordinates),
     collect: (mon) => ({
@@ -19,10 +19,7 @@ const GridSpace = (props) => {
   });
   return (
     <div
-      ref={drop}
-      style={{
-        backgroundColor: isOver ? "grey" : null,
-      }}
+      ref={!props.onClick ? drop : null}
       key={props.gridSpace.coordinates}
       className={className}
       onClick={clickSetting}
