@@ -1,5 +1,6 @@
 const Ship = (name) => {
   let ship = [];
+  let onBoard = false;
   let length;
   // eslint-disable-next-line default-case
   switch (name) {
@@ -22,6 +23,11 @@ const Ship = (name) => {
   const getName = () => name;
   const getShip = () => ship;
   const getLength = () => length;
+  const getPlacedStatus = () => onBoard;
+  const place = () => {
+    onBoard = true;
+  };
+
   for (let i = 0; i < length; i++) {
     let shipSpace = {
       index: i,
@@ -45,7 +51,7 @@ const Ship = (name) => {
     return sunkStatus;
   };
 
-  return { getName, getLength, getShip, hit, isSunk };
+  return { getName, getLength, getShip, hit, isSunk, getPlacedStatus, place };
 };
 
 module.exports = Ship;
