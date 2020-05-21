@@ -1,10 +1,14 @@
 import React from "react";
-import { populateGameboard, getComputerPlay } from "../helpers";
+import {
+  populateGameboard,
+  getComputerPlay,
+  coordinatesToIndex,
+} from "../helpers";
 import Board from "./Board";
 import Ship from "./Ship";
 
 import { DndProvider } from "react-dnd";
-import HTML5Backend from "react-dnd-html5-backend";
+import Backend from "react-dnd-html5-backend";
 
 const Gameboard = require("../factories/Gameboard");
 const Player = require("../factories/Player");
@@ -20,6 +24,8 @@ class Game extends React.Component {
       gameStatus: false,
       shipCoordinates: null,
       shipOrientation: "horizontal",
+      hoverSpaces: null,
+      shipIndex: null,
     };
     this.players = [Player("player1"), Player("player2")];
   }
@@ -111,72 +117,86 @@ class Game extends React.Component {
       this.state.shipOrientation === "horizontal" ? "vertical" : "horizontal";
     this.setState({ shipOrientation });
   }
-  handleSubmit(e) {
-    e.preventDefault();
 
-    const gameboard = this.state.playerGameboard;
-    gameboard.placeShip(
-      "Carrier",
-      this.state.shipOrientation,
-      this.state.shipCoordinates
-    );
-    this.setState({
-      shipCoordinates: null,
-      shipOrientation: null,
-    });
-    console.log(e.target);
-  }
-  handleChange(e) {
-    if (e.target.id === "orientation") {
-      let orientation = e.target.value;
-      console.log(orientation);
-      this.setState({ shipOrientation: orientation });
-    } else {
-      let coordinates = e.target.value;
-      console.log(coordinates);
-      this.setState({ shipCoordinates: coordinates });
+  handleDrop(coordinates) {
+    if (typeof coordinates === "string") {
+      //ignores if event was passed
+      const shipName = this.state.shipIndex.slice(0, -1);
+      const index = this.state.shipIndex[this.state.shipIndex.length - 1];
+      let firstIndex = coordinatesToIndex(coordinates) - index;
+      const playerGameboard = this.state.playerGameboard;
+      playerGameboard.placeShip(
+        shipName,
+        this.state.shipOrientation,
+        firstIndex
+      );
+      this.setState({ playerGameboard });
     }
+  }
+  handleDrag(e) {
+    this.setState({ shipIndex: e.target.id });
+  }
+  handleHover(coordinates) {
+    const shipName = this.state.shipIndex.slice(0, -1);
+    const shipLength = this.state.playerGameboard
+      .getShips()
+      .find((ship) => ship.getName() === shipName)
+      .getLength();
+    const index = this.state.shipIndex[this.state.shipIndex.length - 1];
+    let coordinateIndex = coordinatesToIndex(coordinates) - index;
+    let hoverSpaces = [];
+    for (let i = 0; i < shipLength; i++) {
+      hoverSpaces.push(coordinateIndex);
+      coordinateIndex++;
+    }
+    //this.setState({hoverSpaces})
+  }
+  renderShip(ship) {
+    return (
+      <Ship
+        onClick={this.handleDrag.bind(this)}
+        ship={ship}
+        orientation={this.state.shipOrientation}
+      />
+    );
   }
 
   render() {
     //reset doesn't do anything yet
     let message = this.state.gameStatus ? "Reset" : "Play Game";
+    let classList = "ships-container";
+    classList =
+      this.state.shipOrientation === "horizontal"
+        ? classList
+        : classList + " vertical";
     return (
-      <div className="game-container">
-        <button onClick={this.setUpGame.bind(this)}>{message}</button>
-        <div className="board-container">
-          <Board board={this.state.playerGameboard.getGrid()} />
-          <Board
-            playerAttack={true}
-            board={this.state.computerGameboard.getGrid()}
-            onClick={this.handleAttack.bind(this)}
-          />
+      <DndProvider backend={Backend}>
+        <div className="game-container">
+          <button onClick={this.setUpGame.bind(this)}>{message}</button>
+          <div className="board-container">
+            <Board
+              key="playerGameboard"
+              hoverSpaces={this.state.hoverSpaces}
+              board={this.state.playerGameboard.getGrid()}
+              onDrop={this.handleDrop.bind(this)}
+              onHover={this.handleHover.bind(this)}
+            />
+            <Board
+              key="computerGameboard"
+              board={this.state.computerGameboard.getGrid()}
+              onClick={this.handleAttack.bind(this)}
+            />
+          </div>
+          <div className={classList}>
+            {this.renderShip(this.state.playerGameboard.getShips()[0])}
+            {this.renderShip(this.state.playerGameboard.getShips()[1])}
+            {this.renderShip(this.state.playerGameboard.getShips()[2])}
+            {this.renderShip(this.state.playerGameboard.getShips()[3])}
+            {this.renderShip(this.state.playerGameboard.getShips()[4])}
+          </div>
+          <button onClick={this.handleFlip.bind(this)}>Flip</button>
         </div>
-        <div className="ships-container">
-          <Ship
-            onChange={this.handleChange.bind(this)}
-            onSubmit={this.handleSubmit.bind(this)}
-            ship={this.state.playerGameboard.getShips()[0]}
-          />
-          <Ship
-            onSubmit={this.handleSubmit.bind(this)}
-            ship={this.state.playerGameboard.getShips()[1]}
-          />
-          <Ship
-            onSubmit={this.handleSubmit.bind(this)}
-            ship={this.state.playerGameboard.getShips()[2]}
-          />
-          <Ship
-            onSubmit={this.handleSubmit.bind(this)}
-            ship={this.state.playerGameboard.getShips()[3]}
-          />
-          <Ship
-            onSubmit={this.handleSubmit.bind(this)}
-            ship={this.state.playerGameboard.getShips()[4]}
-          />
-        </div>
-        <button onClick={this.handleFlip.bind(this)}>Flip</button>
-      </div>
+      </DndProvider>
     );
   }
 }
