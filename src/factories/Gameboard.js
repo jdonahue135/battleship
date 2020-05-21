@@ -43,9 +43,11 @@ const Gameboard = () => {
     //place ship on grid items
     for (let i = 0; i < ship.getLength(); i++) {
       // find gridItem
-      let gridItem = grid.find(
-        (theItem) => theItem.index === Number(firstIndex) + i * increment
-      );
+      let currentIndex = Number(firstIndex) + i * increment;
+      if (currentIndex > 99) {
+        currentIndex = currentIndex - 100;
+      }
+      let gridItem = grid.find((theItem) => theItem.index === currentIndex);
 
       // assign ship to gridName
       gridItem.shipName = shipName;
@@ -57,7 +59,6 @@ const Gameboard = () => {
   const receiveAttack = (index) => {
     let gridSpace = grid.find((space) => space.index === Number(index));
     if (gridSpace.hitStatus === true) {
-      console.log("space has already been hit");
       return false;
     } else {
       gridSpace.hitStatus = true;
