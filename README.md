@@ -1,3 +1,5 @@
+Create a single page Battleship game by utilizing Test Driven Development as part of [The Odin Project's curriculum](https://www.theodinproject.com/courses/javascript/lessons/battleship)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
