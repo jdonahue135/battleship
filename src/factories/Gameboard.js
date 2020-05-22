@@ -130,6 +130,15 @@ const Gameboard = () => {
     return true;
   };
 
+  const allShipsOnBoard = () => {
+    for (let i = 0; i < ships.length; i++) {
+      if (ships[i].getPlacedStatus() === false) {
+        return false;
+      }
+    }
+    return true;
+  };
+
   //this function is for testing only I think
   const getGridItem = (index) => {
     const gridItem = grid.find((item) => item.index === index);
@@ -145,6 +154,7 @@ const Gameboard = () => {
     areAllSunk,
     getGridItem,
     getGrid,
+    allShipsOnBoard,
   };
 };
 
