@@ -172,9 +172,15 @@ class Game extends React.Component {
 
   render() {
     let message = this.state.gameStatus ? "Reset" : "Play Game";
-    let fn = this.state.gameStatus
-      ? this.resetGame.bind(this)
-      : this.setUpGame.bind(this);
+    let fn;
+    let hiddenClassName = "";
+    if (this.state.playerGameboard.allShipsOnBoard()) {
+      fn = this.state.gameStatus
+        ? this.resetGame.bind(this)
+        : this.setUpGame.bind(this);
+      hiddenClassName = "hidden";
+    }
+
     let classList = "ships-container";
     classList =
       this.state.shipOrientation === "horizontal"
@@ -183,19 +189,13 @@ class Game extends React.Component {
     return (
       <DndProvider backend={Backend}>
         <div className="game-container">
+          <h1>Battleship</h1>
           <button onClick={fn}>{message}</button>
-          <div className="board-container">
-            <Board
-              key="playerGameboard"
-              board={this.state.playerGameboard.getGrid()}
-              onDrop={this.handleDrop.bind(this)}
-            />
-            <Board
-              key="computerGameboard"
-              board={this.state.computerGameboard.getGrid()}
-              onClick={this.handleAttack.bind(this)}
-            />
+          <div className="player-label-container">
+            <h2>Player</h2>
+            <h2>Enemy</h2>
           </div>
+          <h3 className={hiddenClassName}>Your ships</h3>
           <div className={classList}>
             {this.renderShip(this.state.playerGameboard.getShips()[0])}
             {this.renderShip(this.state.playerGameboard.getShips()[1])}
@@ -203,7 +203,25 @@ class Game extends React.Component {
             {this.renderShip(this.state.playerGameboard.getShips()[3])}
             {this.renderShip(this.state.playerGameboard.getShips()[4])}
           </div>
-          <button onClick={this.handleFlip.bind(this)}>Flip</button>
+          <div className="board-container">
+            <Board
+              key="playerGameboard"
+              board={this.state.playerGameboard.getGrid()}
+              onDrop={this.handleDrop.bind(this)}
+            />
+
+            <Board
+              key="computerGameboard"
+              board={this.state.computerGameboard.getGrid()}
+              onClick={this.handleAttack.bind(this)}
+            />
+          </div>
+          <button
+            className={"flip-button " + hiddenClassName}
+            onClick={this.handleFlip.bind(this)}
+          >
+            Flip
+          </button>
         </div>
       </DndProvider>
     );

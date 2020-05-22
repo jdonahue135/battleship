@@ -1,6 +1,20 @@
-.player-container {
+.game-container {
+  text-align: center;
+}
+.player-label-container {
   display: flex;
   justify-content: center;
+}
+h2 {
+  padding: 0 10vw;
+  text-align: left;
+}
+h3 {
+  text-align: left;
+  margin: 0;
+}
+.flip-button {
+  float: left;
 }
 .board-container {
   justify-content: center;
@@ -30,6 +44,8 @@
 }
 .ships-container {
   display: grid;
+  grid-template-columns: max-content;
+  position: absolute;
 }
 .vertical {
   display: flex;
@@ -100,4 +116,7 @@
 }
 form label {
   padding: 5px;
+}
+.hidden {
+  display: none;
 }
