@@ -6,7 +6,6 @@ import { useDrop } from "react-dnd";
 const GridSpace = (props) => {
   let clickSetting = props.onClick ? props.onClick : null;
   let className = "gridspace";
-  //if props.onClick
   if (!clickSetting) {
     className = props.gridSpace.shipName ? "gridspace has-ship" : "gridspace";
   }
