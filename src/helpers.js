@@ -9,11 +9,6 @@ const populateGameboard = (gameboard) => {
       i--;
     }
   }
-  /*gameboard.placeShip("Patrol Boat", "horizontal", 0);
-  gameboard.placeShip("Submarine", "horizontal", 10);
-  gameboard.placeShip("Destroyer", "horizontal", 20);
-  gameboard.placeShip("Battleship", "horizontal", 30);
-  gameboard.placeShip("Carrier", "horizontal", 40);*/
 };
 
 const sinkAllShips = (gameboard) => {
