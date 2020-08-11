@@ -120,7 +120,6 @@ class Game extends React.Component {
   }
 
   handleFlip() {
-    console.log("Flip, flip, flipadelphia");
     let shipOrientation =
       this.state.shipOrientation === "horizontal" ? "vertical" : "horizontal";
     this.setState({ shipOrientation });
