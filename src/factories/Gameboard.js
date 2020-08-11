@@ -70,14 +70,13 @@ const Gameboard = () => {
       let row = firstCoordinates[0];
       let distanceToWall = 10 - (row.charCodeAt(0) - 65);
       let wiggleRoom = distanceToWall - ship.getLength();
-      err = wiggleRoom > 0 ? false : true;
+      err = wiggleRoom >= 0 ? false : true;
     }
     if (err) {
       return false;
     }
 
     //place ship on grid items
-
     // Increments index correctly for horizontal or vertical orientation
     let increment = orientation === "horizontal" ? 1 : 10;
 
